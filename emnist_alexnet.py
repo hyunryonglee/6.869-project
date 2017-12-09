@@ -142,6 +142,7 @@ opt_data_train = {
     'data_root' : 'EMNIST_data',
     'fine_size': h,
     'type'     : 'train',
+    'randomize': True
     }
 
 #opt_data_train = {
@@ -206,7 +207,7 @@ with tf.Session() as sess:
 
     print('Optimization Finished!')
 
-    # Calculate accuracy for 500 mnist test images
+    # Calculate accuracy for 500 emnist test images
     images_test, labels_test = loader.load_test()
     accuracy_val = sess.run(accuracy, feed_dict={x: images_test[:500], y: labels_test[:500], keep_dropout: 1., train_phase: False})
     print('Testing Accuracy:', accuracy_val)

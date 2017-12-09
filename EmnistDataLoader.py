@@ -2,8 +2,9 @@ import os
 import numpy as np
 import scipy.misc
 import h5py
-import os
 import struct
+import imutils
+import cv2
 
 """
 Loosely inspired by http://abel.ee.ucla.edu/cvxopt/_downloads/mnist.py
@@ -63,6 +64,7 @@ class DataLoader(object):
         self.fine_size = int(kwargs['fine_size'])
         self.data_root = os.path.join(kwargs['data_root'])
         self.type = kwargs['type']
+        self.randomize = kwargs['randomize']
 
         # read data info from lists
         self.training_data = list(read(dataset='training', path=self.data_root, data_from = kwargs['data_from']))
@@ -87,6 +89,19 @@ class DataLoader(object):
         labels_batch = np.zeros(batch_size)
         for i in range(batch_size):
             label, pixels = self.training_data[self._train_idx]
+
+            if self.randomize:
+                flip = np.random.random_integers(0, 1)
+                if flip>0:
+                    pixels = pixels[:,::-1]
+
+                angle = np.random.random_integers(0,360)
+                pixels = imutils.rotate(pixels, angle)
+
+                translate_x = np.random.random_integers(-5,5)
+                translate_y = np.random.random_integers(-5,5)
+                pixels = imutils.translate(pixels, translate_x, translate_y)
+
             pixels = pixels.reshape((self.fine_size, self.fine_size, 1))
             images_batch[i, ...] = pixels
             labels_batch[i, ...] = label
