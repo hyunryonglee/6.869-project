@@ -108,8 +108,7 @@ class DataLoader(object):
 
         return images_batch, labels_batch
 
-    def load_test(self):
-        batch_size = len(self.testing_data)
+    def load_test_batch(self, batch_size):
         images_batch = np.zeros((batch_size, self.fine_size, self.fine_size, 1))
         labels_batch = np.zeros(batch_size)
         for i in range(batch_size):
@@ -122,6 +121,9 @@ class DataLoader(object):
                 self._test_idx = 0
 
         return images_batch, labels_batch
+
+    def test_size(self):
+        return self.num_test
 
     def reset(self):
         self._train_idx = 0

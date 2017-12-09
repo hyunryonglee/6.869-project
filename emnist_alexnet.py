@@ -21,7 +21,8 @@ batch_size = 32
 step_display = 50
 step_save = 10000
 path_save = './alexnet'
-start_from = ''
+start_from = 'alexnet-50000'
+only_test = True
 
 def batch_norm_layer(x, train_phase, scope_bn):
     return batch_norm(x, decay=0.9, center=True, scale=True,
@@ -181,33 +182,47 @@ saver = tf.train.Saver()
 # Launch the graph
 with tf.Session() as sess:
     # Initialization
-    sess.run(init)
+    if len(start_from)>1:
+        saver.restore(sess, start_from)
+    else:
+        sess.run(init)
 
-    step = 1
-    while step < training_iters:
-        # Load a batch of data
-        images_batch, labels_batch = loader.next_batch(batch_size)
+    if only_test == False:
 
-        # Run optimization op (backprop)
-        sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, keep_dropout: dropout, train_phase: True})
+        step = 1
+        while step < training_iters:
+            # Load a batch of data
+            images_batch, labels_batch = loader.next_batch(batch_size)
 
-        if step % step_display == 0:
-            # Calculate batch loss and accuracy while training
-            l, acc = sess.run([loss, accuracy], feed_dict={x: images_batch, y: labels_batch, keep_dropout: 1., train_phase: False})
-            print('Iter ' + str(step) + ', Minibatch Loss = ' + \
-                  '{:.6f}'.format(l) + ", Training Accuracy = " + \
-                  '{:.4f}'.format(acc))
+            # Run optimization op (backprop)
+            sess.run(train_optimizer, feed_dict={x: images_batch, y: labels_batch, keep_dropout: dropout, train_phase: True})
 
-        step += 1
+            if step % step_display == 0:
+                # Calculate batch loss and accuracy while training
+                l, acc = sess.run([loss, accuracy], feed_dict={x: images_batch, y: labels_batch, keep_dropout: 1., train_phase: False})
+                print('Iter ' + str(step) + ', Minibatch Loss = ' + \
+                      '{:.6f}'.format(l) + ", Training Accuracy = " + \
+                      '{:.4f}'.format(acc))
 
-        # Save model
-        if step % step_save == 0:
-            saver.save(sess, path_save, global_step=step)
-            print('Model saved at Iter %d !' %(step))
+            step += 1
 
-    print('Optimization Finished!')
+            # Save model
+            if step % step_save == 0:
+                saver.save(sess, path_save, global_step=step)
+                print('Model saved at Iter %d !' %(step))
 
-    # Calculate accuracy for 500 emnist test images
-    images_test, labels_test = loader.load_test()
-    accuracy_val = sess.run(accuracy, feed_dict={x: images_test[:500], y: labels_test[:500], keep_dropout: 1., train_phase: False})
-    print('Testing Accuracy:', accuracy_val)
+        print('Optimization Finished!')
+
+    # Evaluate on the whole validation set
+    print('Evaluation on the whole validation set...')
+    num_batch = loader.test_size() // batch_size
+    accuracy_val_total = 0.
+    for i in range(num_batch):
+        images_test, labels_test = loader.load_test_batch(batch_size)
+        accuracy_val = sess.run(accuracy, feed_dict={x: images_test, y: labels_test, keep_dropout: 1., train_phase: False})
+        accuracy_val_total += accuracy_val
+        print("Validation Accuracy = " + \
+              "{:.4f}".format(accuracy_val))
+
+    accuracy_val_total /= num_batch
+    print('Evaluation Finished! Testing Accuracy:', accuracy_val_total)
