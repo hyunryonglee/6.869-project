@@ -60,7 +60,7 @@ dropout = 0.5 # Dropout, probability to keep units
 # Construct dataloader
 opt_data_train = {
     'data_from' : 'emnist',
-    'data_root' : 'EMNIST_data/gzip',
+    'data_root' : 'EMNIST_data',
     'fine_size': h,
     'type'     : 'train',
     }
