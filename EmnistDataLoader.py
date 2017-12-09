@@ -20,11 +20,11 @@ def read(dataset = "training", path = ".", data_from = "emnist"):
 
     if data_from == "emnist":
         if dataset is "training":
-            fname_img = os.path.join(path, 'emnist-byclass-train-images-idx3-ubyte')
-            fname_lbl = os.path.join(path, 'emnist-byclass-train-labels-idx1-ubyte')
+            fname_img = os.path.join(path, 'emnist-balanced-train-images-idx3-ubyte')
+            fname_lbl = os.path.join(path, 'emnist-balanced-train-labels-idx1-ubyte')
         elif dataset is "testing":
-            fname_img = os.path.join(path, 'emnist-byclass-test-images-idx3-ubyte')
-            fname_lbl = os.path.join(path, 'emnist-byclass-test-labels-idx1-ubyte')
+            fname_img = os.path.join(path, 'emnist-balanced-test-images-idx3-ubyte')
+            fname_lbl = os.path.join(path, 'emnist-balanced-test-labels-idx1-ubyte')
         else:
             raise ValueError, "dataset must be 'testing' or 'training'"
     elif data_from == "mnist":
@@ -91,15 +91,11 @@ class DataLoader(object):
             label, pixels = self.training_data[self._train_idx]
 
             if self.randomize:
-                flip = np.random.random_integers(0, 1)
-                if flip>0:
-                    pixels = pixels[:,::-1]
-
-                angle = np.random.random_integers(0,360)
+                angle = np.random.random_integers(-30,30)
                 pixels = imutils.rotate(pixels, angle)
 
-                translate_x = np.random.random_integers(-5,5)
-                translate_y = np.random.random_integers(-5,5)
+                translate_x = np.random.random_integers(-3,3)
+                translate_y = np.random.random_integers(-3,3)
                 pixels = imutils.translate(pixels, translate_x, translate_y)
 
             pixels = pixels.reshape((self.fine_size, self.fine_size, 1))

@@ -13,13 +13,13 @@ def cnn(x, keep_dropout):
             'wc1': init_weights([5, 5, 1, 32]),  # 5x5x1 conv, 32 outputs
             'wc2': init_weights([5, 5, 32, 64]),          # 5x5x32 conv, 64 outputs
             'wf3': init_weights([7*7*64, 1024]),         # FC 7*7*64 inputs, 1024 outputs
-            'wo': init_weights([1024, 62]),         # FC 1024 inputs, 10 outputs
+            'wo': init_weights([1024, 47]),         # FC 1024 inputs, 10 outputs
     }
     biases = {
             'bc1': init_bias(32),
             'bc2': init_bias(64),
             'bf3': init_bias(1024),
-            'bo': init_bias(62),
+            'bo': init_bias(47),
     }
 
     # Conv + ReLU + Pool

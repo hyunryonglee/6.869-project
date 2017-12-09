@@ -41,11 +41,11 @@ def alexnet(x, keep_dropout, train_phase):
 
         'wf6': tf.Variable(tf.random_normal([7*7*256, 4096], stddev=np.sqrt(2./(7*7*256)))),
         'wf7': tf.Variable(tf.random_normal([4096, 4096], stddev=np.sqrt(2./4096))),
-        'wo': tf.Variable(tf.random_normal([4096, 62], stddev=np.sqrt(2./4096)))
+        'wo': tf.Variable(tf.random_normal([4096, 47], stddev=np.sqrt(2./4096)))
     }
 
     biases = {
-        'bo': tf.Variable(tf.ones(62))
+        'bo': tf.Variable(tf.ones(47))
     }
 
     # Conv + ReLU + Pool, 224->55->27
